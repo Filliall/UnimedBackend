@@ -24,9 +24,22 @@ namespace UnimedBackend.Services
         }
         public async Task<TarefaModel> CreateAsync(TarefaModel tarefa)
         {
-            await _context.Tarefas.AddAsync(tarefa);
-            await _context.SaveChangesAsync();
+            if (tarefa.ID > 0)
+            {
+                var tarefaExistente = await _context.Tarefas.FirstOrDefaultAsync(t => t.ID == tarefa.ID);
+                if (tarefaExistente != null)
+                {
+                    tarefaExistente.Title = tarefa.Title;
+                    tarefaExistente.IsCompleted = tarefa.IsCompleted;
+                    tarefaExistente.ProjectID = tarefa.ProjectID;
+                }
+            }
+            else
+            {
+                await _context.Tarefas.AddAsync(tarefa);
+            }
 
+            await _context.SaveChangesAsync();
             return tarefa;
         }
     }

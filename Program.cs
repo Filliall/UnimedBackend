@@ -15,6 +15,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<UnimedBackend.Services.Interfaces.ITarefaService, UnimedBackend.Services.TarefaService>();
 
+// Configuração do CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy => policy.WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Aplica as migrations automaticamente ao iniciar
@@ -34,6 +43,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// Ativando o CORS
+app.UseCors("AllowAngular");
 
 app.MapControllers();
 
